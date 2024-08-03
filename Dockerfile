@@ -1,33 +1,33 @@
-FROM node:16 as builder
+# Sử dụng image gốc
+FROM calciumion/new-api:latest
 
-WORKDIR /build
-COPY web/package.json .
-RUN npm install
-COPY ./web .
-COPY ./VERSION .
-RUN DISABLE_ESLINT_PLUGIN='true' VITE_REACT_APP_VERSION=$(cat VERSION) npm run build
+# Cài đặt các công cụ cần thiết
+RUN apk add --no-cache wget
 
-FROM golang AS builder2
+# Thiết lập thư mục làm việc
+WORKDIR /app
 
-ENV GO111MODULE=on \
-    CGO_ENABLED=1 \
-    GOOS=linux
+# Sao chép các file cần thiết (nếu có)
+# COPY . .
 
-WORKDIR /build
-ADD go.mod go.sum ./
-RUN go mod download
-COPY . .
-COPY --from=builder /build/dist ./web/dist
-RUN go build -ldflags "-s -w -X 'one-api/common.Version=$(cat VERSION)' -extldflags '-static'" -o one-api
+# Thiết lập biến môi trường
+ENV SQL_DSN=postgresql://postgres:NGxWVvFElTKukcyIlQIDBqgechibziro@monorail.proxy.rlwy.net:30046/railway
+ENV REDIS_CONN_STRING=redis://default:rLRZHkllTrfXLcfHMXeZdMuPGXDLxCBS@redis-mhr2.railway.internal:6379
+ENV SESSION_SECRET=random_string
+ENV TZ=Asia/Shanghai
 
-FROM alpine
+# Tạo thư mục logs
+RUN mkdir -p /app/logs
 
-RUN apk update \
-    && apk upgrade \
-    && apk add --no-cache ca-certificates tzdata \
-    && update-ca-certificates 2>/dev/null || true
-
-COPY --from=builder2 /build/one-api /
+# Mở cổng 3000
 EXPOSE 3000
-WORKDIR /data
-ENTRYPOINT ["/one-api"]
+
+# Thiết lập healthcheck
+HEALTHCHECK --interval=30s --timeout=10s --retries=3 \
+  CMD wget -q -O - http://localhost:3000/api/status | grep -o '"success":\s*true' | awk -F: '{print $2}'
+
+# Lệnh chạy khi container khởi động
+CMD ["--log-dir", "/app/logs"]
+
+# Ghi đè ENTRYPOINT nếu cần
+# ENTRYPOINT ["/one-api"]
