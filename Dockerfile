@@ -8,7 +8,6 @@ RUN apk add --no-cache wget
 WORKDIR /app
 
 # Thiết lập biến môi trường
-ENV SQL_DSN=${{ MySQL.MYSQL_URL }}
 ENV REDIS_CONN_STRING=redis://default:rLRZHkllTrfXLcfHMXeZdMuPGXDLxCBS@redis-mhr2.railway.internal:6379
 ENV SESSION_SECRET=fK9x2pY7zN3Q8R1mXjWsLtHbEcUvAoGq
 ENV TZ=Asia/Shanghai
