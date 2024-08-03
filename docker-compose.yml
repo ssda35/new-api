@@ -13,8 +13,8 @@ services:
       - ./data:/data
       - ./logs:/app/logs
     environment:
-      - SQL_DSN=root:123456@tcp(host.docker.internal:3306)/new-api  # 修改此行，或注释掉以使用 SQLite 作为数据库
-      - REDIS_CONN_STRING=redis://redis
+      - SQL_DSN=postgresql://postgres:NGxWVvFElTKukcyIlQIDBqgechibziro@monorail.proxy.rlwy.net:30046/railway  # 修改此行，或注释掉以使用 SQLite 作为数据库
+      - REDIS_CONN_STRING=redis://default:rLRZHkllTrfXLcfHMXeZdMuPGXDLxCBS@redis-mhr2.railway.internal:6379
       - SESSION_SECRET=random_string  # 修改为随机字符串
       - TZ=Asia/Shanghai
 #      - NODE_TYPE=slave  # 多机部署时从节点取消注释该行
