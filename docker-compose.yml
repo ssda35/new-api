@@ -2,8 +2,10 @@ version: '3.4'
 
 services:
   new-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
     image: calciumion/new-api:latest
-    # build: .
     container_name: new-api
     restart: always
     command: --log-dir /app/logs
@@ -13,14 +15,10 @@ services:
       - ./data:/data
       - ./logs:/app/logs
     environment:
-      - SQL_DSN=postgresql://postgres:NGxWVvFElTKukcyIlQIDBqgechibziro@monorail.proxy.rlwy.net:30046/railway  # 修改此行，或注释掉以使用 SQLite 作为数据库
+      - SQL_DSN=postgresql://postgres:NGxWVvFElTKukcyIlQIDBqgechibziro@monorail.proxy.rlwy.net:30046/railway
       - REDIS_CONN_STRING=redis://default:rLRZHkllTrfXLcfHMXeZdMuPGXDLxCBS@redis-mhr2.railway.internal:6379
-      - SESSION_SECRET=random_string  # 修改为随机字符串
+      - SESSION_SECRET=random_string
       - TZ=Asia/Shanghai
-#      - NODE_TYPE=slave  # 多机部署时从节点取消注释该行
-#      - SYNC_FREQUENCY=60  # 需要定期从数据库加载数据时取消注释该行
-#      - FRONTEND_BASE_URL=https://openai.justsong.cn  # 多机部署时从节点取消注释该行
-
     depends_on:
       - redis
     healthcheck:
